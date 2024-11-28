@@ -22,7 +22,15 @@ jobs:
       #     ls ${{ github.workspace }}
       # - run: echo "🍏 This job's status is ${{ job.status }}."
       - uses: actions/checkout@v4
-      - run: make install
+      - name: Cache ResumeCV Virtualenv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: resumecv
+          key: ${{ runner.os }}-venv
+      - name: Generate ResumeCV Virtualenv
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: make install
       - run: make render_all
       - uses: actions/upload-artifact@v4
         with:
