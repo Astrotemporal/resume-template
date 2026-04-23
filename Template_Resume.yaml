@@ -1,0 +1,91 @@
+# Resume template — industry-facing / one-page
+# Theme: engineeringresumes, condensed section set (education, experience,
+# projects, skills). Bullet counts tuned for single-page output.
+# For a multi-page academic version, see Template_CV.yaml.
+#
+# Render:   make resume
+# Or:       rendercv render Template_Resume.yaml --pdf-path Template_Resume.pdf
+
+cv:
+  name: First Last
+  location: City, State
+  email: you@example.com
+  # phone: tel:+1-555-555-0100   # uncomment + replace with a real number
+  social_networks:
+    - network: LinkedIn
+      username: your-handle
+    - network: GitHub
+      username: your-handle
+  sections:
+    education:
+      - institution: Undergraduate Institution
+        area: Primary Major
+        degree: BS
+        start_date: 2019-09
+        end_date: 2023-06
+        highlights:
+          - 'GPA: X.X/4.0 — *Honors*'
+          - '**Coursework:** Course A, Course B, Course C, Course D'
+    experience:
+      - company: Company
+        position: Position Title
+        location: City, State
+        start_date: 2023-06
+        end_date: 2025-09
+        highlights:
+          - Accomplishment with **quantified impact** and technology used
+          - Accomplishment with **quantified impact** and technology used
+          - Accomplishment with **quantified impact** and technology used
+      - company: Company
+        position: Earlier Position
+        location: City, State
+        start_date: 2022-06
+        end_date: 2023-06
+        highlights:
+          - Accomplishment with **quantified impact** and technology used
+          - Accomplishment with **quantified impact** and technology used
+    projects:
+      - name: Project Name
+        start_date: 2022-09
+        end_date: 2023-06
+        highlights:
+          - 'One-line description of project scope and role — *Tools: Language, Framework*'
+    skills:
+      - label: Languages
+        details: Python, Go, SQL
+      - label: Technologies
+        details: Docker, Terraform, AWS
+
+design:
+  theme: engineeringresumes
+  page:
+    size: us-letter
+    top_margin: 0.5in
+    bottom_margin: 0.5in
+    left_margin: 0.75in
+    right_margin: 0.75in
+    show_footer: false
+    show_top_note: false
+  colors:
+    name: '#000000'
+  typography:
+    font_size:
+      body: 10pt
+      name: 24pt
+    alignment: left
+  links:
+    show_external_link_icon: false
+  header:
+    connections:
+      separator: '|'
+      show_icons: false
+      space_between_connections: 0.3cm
+  section_titles:
+    space_above: 0.2cm
+    space_below: 0.15cm
+  entries:
+    side_space: 0cm
+    date_and_location_width: 4cm
+
+locale:
+  language: english

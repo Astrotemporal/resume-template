@@ -1,0 +1,19 @@
+# rendercv build artifacts
+rendercv_output/
+*.pdf
+*.typ
+
+# local venvs
+resumecv/
+venv/
+.venv/
+
+# populated yamls live here, never checked in
+personal/*
+!personal/.gitkeep
+!personal/README.md
+
+# editor/OS cruft
+.DS_Store
+__pycache__/
+*.pyc

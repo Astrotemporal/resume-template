@@ -1,38 +1,64 @@
-name: Renders and uploads Resumes/CVs
-run-name: ${{ github.actor }} is rendering resumes
+name: Render CV and Resume PDFs
+
+# Triggers on any yaml change at the repo root. personal/*.yaml is
+# gitignored so it won't trigger here; CI renders the Template_* yamls
+# as proof-of-correctness, and downstream consumers fetch those artifacts.
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - '*.yaml'
+      - 'requirements.txt'
+      - 'Makefile'
+  workflow_dispatch:
+
 jobs:
-  Explore-GitHub-Actions:
-    runs-on: macos-latest
+  render:
+    runs-on: ubuntu-latest
     steps:
-      # - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      # - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      # - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      # - name: Check out repository code
-      #   uses: actions/checkout@v4
-      # - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      # - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      # - name: List files in the repository
-      #   run: |
-      #     ls ${{ github.workspace }}
-      # - run: echo "🍏 This job's status is ${{ job.status }}."
       - uses: actions/checkout@v4
-      - name: Cache ResumeCV Virtualenv
-        id: cache-venv
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Cache pip + venv
         uses: actions/cache@v4
         with:
-          path: resumecv
-          key: ${{ runner.os }}-venv
-      - name: Generate ResumeCV Virtualenv
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+          path: |
+            ~/.cache/pip
+            resumecv
+          key: ${{ runner.os }}-py313-rendercv-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-py313-rendercv-
+
+      - name: Install rendercv
         run: make install
-      - run: make render_all
-      - uses: actions/upload-artifact@v4
+
+      - name: Render CVs
+        run: make cv
+
+      - name: Render Resumes
+        run: make resume
+
+      - name: Upload CV artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: resumes
-          path: '*.pdf'
+          name: cv
+          path: '*_CV.pdf'
+          if-no-files-found: warn
+
+      - name: Upload Resume artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: resume
+          path: '*_Resume.pdf'
+          if-no-files-found: warn
+
+      - name: Upload rendercv_output (Typst / MD / HTML / PNG)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendercv_output
+          path: rendercv_output/
+          if-no-files-found: warn

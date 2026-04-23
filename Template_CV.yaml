@@ -1,0 +1,133 @@
+# CV template — academic / comprehensive
+# Theme: sb2nov, multi-page, full section set (education, experience,
+# research, publications, projects, teaching, awards, activities, skills).
+# For a one-page industry-facing version, see Template_Resume.yaml.
+#
+# Render:   make cv
+# Or:       rendercv render Template_CV.yaml --pdf-path Template_CV.pdf
+
+cv:
+  name: First Last
+  location: City, State
+  email: you@example.com
+  # phone: tel:+1-555-555-0100   # uncomment + replace with a real number
+  social_networks:
+    - network: LinkedIn
+      username: your-handle
+    - network: GitHub
+      username: your-handle
+  sections:
+    education:
+      - institution: Graduate Institution
+        area: Field of Study
+        degree: Masters
+        start_date: 2025-09
+        highlights:
+          - '**Coursework:** Course A, Course B, Course C'
+      - institution: Undergraduate Institution
+        area: Primary Major; Secondary Major
+        degree: BS
+        start_date: 2019-09
+        end_date: 2023-06
+        highlights:
+          - 'GPA: X.X/4.0'
+          - 'Honors: *Honor Society, Award*'
+          - '**Coursework:** Course A, Course B, Course C'
+    experience:
+      - company: Company
+        position: Position Title
+        location: City, State
+        start_date: 2023-06
+        end_date: 2025-09
+        highlights:
+          - Accomplishment with **quantified impact** and technology used
+          - Accomplishment with **quantified impact** and technology used
+          - Accomplishment with **quantified impact** and technology used
+    research_experience:
+      - company: Research Lab / Institution
+        position: Role
+        location: City, State
+        start_date: 2021-10
+        end_date: 2023-01
+        highlights:
+          - Research contribution with technology used
+          - Research contribution with publication/artifact link
+    publications:
+      - title: Publication Title
+        authors:
+          - '***First Last***'
+          - Coauthor Name
+        doi: 10.XXXX/XXXXX.XXXX.XXXXXXX
+        date: 2024-01
+    projects:
+      - name: Project Name
+        start_date: 2022-09
+        end_date: 2023-06
+        highlights:
+          - One-line description of project scope and role
+          - 'Tools Used: Language, Framework'
+    awards:
+      - name: Award Name
+        date: 2022-06
+      - name: Scholarship / Fellowship
+        date: '2020, 2021'
+    teaching_experience:
+      - company: Institution
+        position: Role (TA / Reader / Learning Assistant)
+        location: City, State
+        start_date: 2022-09
+        end_date: 2023-06
+        highlights:
+          - Responsibility and scale (e.g. "Graded for 200+ students")
+    activities:
+      - company: Organization
+        position: Role
+        start_date: 2022-09
+        end_date: 2023-06
+        highlights:
+          - Activity description
+    certifications:
+      - company: Issuer
+        position: Certification Name
+        date: 2023-04
+    skills:
+      - label: Languages
+        details: Python, Go, SQL
+      - label: Technologies
+        details: Docker, Terraform, AWS
+
+design:
+  theme: sb2nov
+  page:
+    size: us-letter
+    top_margin: 1in
+    bottom_margin: 1in
+    left_margin: 1in
+    right_margin: 1in
+    show_footer: true
+    show_top_note: false
+  colors:
+    name: '#004f90'
+  typography:
+    font_size:
+      body: 11pt
+      name: 30pt
+    alignment: justified
+  links:
+    show_external_link_icon: true
+  header:
+    connections:
+      separator: ''
+      show_icons: true
+      space_between_connections: 0.5cm
+  section_titles:
+    space_above: 0.3cm
+    space_below: 0.2cm
+  entries:
+    side_space: 0.2cm
+    date_and_location_width: 4.5cm
+  templates:
+    footer: '*NAME -- PAGE_NUMBER/TOTAL_PAGES*'
+
+locale:
+  language: english
