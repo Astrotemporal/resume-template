@@ -62,3 +62,26 @@ jobs:
           name: rendercv_output
           path: rendercv_output/
           if-no-files-found: warn
+
+      - name: Notify portfoliorum to fetch artifacts
+        # Fires a repository_dispatch (type=resume_rendered) to portfoliorum,
+        # which runs .github/workflows/fetch-resume.yml to pull the CV and
+        # resume artifacts from this run and commit them into its own tree.
+        #
+        # Skipped silently if PORTFOLIORUM_DISPATCH_TOKEN is not set — keeps
+        # the workflow green before the cross-repo plumbing is wired up. See
+        # portfoliorum/docs/SETUP.md for token installation.
+        env:
+          GH_TOKEN: ${{ secrets.PORTFOLIORUM_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "PORTFOLIORUM_DISPATCH_TOKEN not set — skipping cross-repo dispatch."
+            echo "(Install the secret to enable. See portfoliorum/docs/SETUP.md.)"
+            exit 0
+          fi
+          gh api repos/Astrotemporal/portfoliorum/dispatches \
+            --method POST \
+            -f event_type=resume_rendered \
+            -f "client_payload[run_id]=${{ github.run_id }}" \
+            -f "client_payload[source_commit]=${{ github.sha }}"
+          echo "Dispatched resume_rendered to Astrotemporal/portfoliorum"
