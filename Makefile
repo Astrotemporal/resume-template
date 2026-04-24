@@ -56,14 +56,16 @@ install: $(VENV)/bin/rendercv
 	@echo "rendercv installed: $$($(RENDERCV) --version 2>&1 | head -1)"
 
 # Render each CV yaml, writing the PDF next to its source (not in rendercv_output/).
+# --pdf-path is resolved RELATIVE to the input yaml's directory, so we pass
+# the basename only, not the repo-relative path.
 cv: $(VENV)/bin/rendercv
 	@if [ -z "$(CV_YAMLS)" ]; then \
 		echo "No *_CV.yaml files found (root or personal/)."; exit 0; \
 	fi
 	@for yaml in $(CV_YAMLS); do \
-		base=$${yaml%.yaml}; \
-		echo ">>> rendering $$yaml -> $$base.pdf"; \
-		$(RENDERCV) render "$$yaml" --pdf-path "$$base.pdf" || exit 1; \
+		basename=$$(basename "$$yaml" .yaml); \
+		echo ">>> rendering $$yaml -> $$(dirname "$$yaml")/$$basename.pdf"; \
+		$(RENDERCV) render "$$yaml" --pdf-path "$$basename.pdf" || exit 1; \
 	done
 
 resume: $(VENV)/bin/rendercv
@@ -71,9 +73,9 @@ resume: $(VENV)/bin/rendercv
 		echo "No *_Resume.yaml files found (root or personal/)."; exit 0; \
 	fi
 	@for yaml in $(RESUME_YAMLS); do \
-		base=$${yaml%.yaml}; \
-		echo ">>> rendering $$yaml -> $$base.pdf"; \
-		$(RENDERCV) render "$$yaml" --pdf-path "$$base.pdf" || exit 1; \
+		basename=$$(basename "$$yaml" .yaml); \
+		echo ">>> rendering $$yaml -> $$(dirname "$$yaml")/$$basename.pdf"; \
+		$(RENDERCV) render "$$yaml" --pdf-path "$$basename.pdf" || exit 1; \
 	done
 
 render_all: cv resume
