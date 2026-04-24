@@ -41,6 +41,9 @@ help:
 	@echo ""
 	@echo "Discovered CV yamls:     $(CV_YAMLS)"
 	@echo "Discovered resume yamls: $(RESUME_YAMLS)"
+	@echo "Available tailoring specs:"
+	@ls personal/tailorings/*.projection.yaml tailorings/*.projection.yaml 2>/dev/null | \
+		sed 's|.*/||; s|\.projection\.yaml||' | sed 's|^|  - |' || echo "  (none)"
 
 $(VENV)/bin/rendercv:
 	@if [ -z "$(PYTHON_BOOTSTRAP)" ]; then \
@@ -80,16 +83,23 @@ resume: $(VENV)/bin/rendercv
 
 render_all: cv resume
 
-# Stage 3 placeholder — see README "Tailoring" section.
-tailor:
+# Project the base CV yaml through a tailoring spec and render the derived PDF.
+# Spec is resolved by scripts/tailor.py:
+#   personal/tailorings/$(TARGET).projection.yaml   (preferred)
+#   tailorings/$(TARGET).projection.yaml            (committed examples)
+tailor: $(VENV)/bin/rendercv
 	@if [ -z "$(TARGET)" ]; then \
-		echo "usage: make tailor TARGET=<name>  (e.g. quantum_research, quantum_eng_intern)"; exit 2; \
+		echo "usage: make tailor TARGET=<name>   (spec resolved under [personal/]tailorings/<name>.projection.yaml)"; \
+		exit 2; \
 	fi
-	@echo "tailor: Stage 3 not yet implemented."
-	@echo "  planned: apply tailorings/$(TARGET).yaml as a --design overlay"
-	@echo "  onto personal/base_content.yaml, emit personal/*_$(TARGET)_Resume.yaml,"
-	@echo "  then render via \`make resume\`."
-	@exit 1
+	$(PY) scripts/tailor.py "$(TARGET)"
+	@# Find what tailor.py just wrote (grab from the spec file) and render it.
+	@spec="personal/tailorings/$(TARGET).projection.yaml"; \
+	if [ ! -f "$$spec" ]; then spec="tailorings/$(TARGET).projection.yaml"; fi; \
+	out=$$($(PY) -c "import yaml,sys; print(yaml.safe_load(open('$$spec'))['output'])"); \
+	basename=$$(basename "$$out" .yaml); \
+	echo ">>> rendering $$out -> $$(dirname "$$out")/$$basename.pdf"; \
+	$(RENDERCV) render "$$out" --pdf-path "$$basename.pdf"
 
 clean:
 	rm -rf rendercv_output/

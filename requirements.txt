@@ -1,1 +1,2 @@
 rendercv[full]>=2.8
+PyYAML>=6.0    # used by scripts/tailor.py for projection specs

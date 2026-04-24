@@ -84,22 +84,63 @@ Top-level keys: `cv`, `design`, `locale`, `rendercv_settings`.
 
 Full field docs: <https://docs.rendercv.com/user_guide/yaml_input_structure/>
 
-## Tailoring (Stage 3 — planned)
+## Tailoring
 
-Position-specific overlays for targeted applications (e.g. quantum
-engineering internship vs. quantum research):
+Position-specific resumes are **derived** from the base CV via a projection
+spec. The CV is the SSOT for content; projection specs subtract, reorder,
+and optionally replace highlights — they never invent content. If a spec
+needs a claim that isn't in the CV, the CV gets updated first.
 
+### Workflow
+
+1. Author a projection spec at `personal/tailorings/<name>.projection.yaml`
+   (or `tailorings/<name>.projection.yaml` for shareable examples).
+2. `make tailor TARGET=<name>` — runs `scripts/tailor.py` to emit the
+   derived yaml at the path declared in the spec's `output:` field, then
+   renders it to PDF alongside.
+
+### Spec anatomy
+
+```yaml
+base:   personal/Gregory_Sinaga_CV.yaml
+output: personal/Gregory_Sinaga_<Target>_Resume.yaml
+
+cv_overrides: {location: "City, State"}   # optional — shallow-merged
+
+sections:
+  education: all                          # keep verbatim
+  research_experience: all
+  experience:
+    include:
+      - "Company / Position"              # allowlist by match_key
+    max_highlights_per_entry: 3
+    highlight_augments:
+      - match: "Company / Position"
+        replace_highlights: ["..."]       # or prepend_highlights / append_highlights
+
+design: {theme: engineeringresumes, ...}  # replaces base.design entirely
+locale: {language: english}
 ```
-tailorings/
-  quantum_research.yaml      # section ordering, emphasis bank, keyword bank
-  quantum_eng_intern.yaml
-```
 
-`make tailor TARGET=quantum_research` will (once implemented) layer the
-overlay onto a single base content yaml and render. This scaffold is the
-on-ramp for the `career-ops` PLAI branch (ROADMAP_MASTER seed #224).
-Currently the target prints a not-implemented message — see the seed
-notes for design direction.
+Match-key format by section type: see `scripts/tailor.py` module docstring.
+
+### What the script does (and doesn't)
+
+- **Does:** subtract sections, subtract entries, order sections per spec,
+  cap highlights, replace/prepend highlights on matched entries, merge
+  `cv_overrides`, replace `design` and `locale`.
+- **Doesn't:** invent content, rewrite tone, reorder entries within a
+  kept allowlist beyond the order you specify, or call an LLM. The
+  pipeline is deterministic and reproducible — same CV + same spec
+  produces the same derived yaml, byte-for-byte.
+
+### career-ops connection
+
+The seed at `ROADMAP_MASTER.md` #224 is the "PLAI career-ops branch"
+vision: LLM-driven CV-to-JD matching that produces projection specs
+automatically. This repo implements the *rendering* half; the LLM-authored
+*specification* half can layer on later (see PLAI ideas_inbox seed
+2026-04-23 on adapter + prompt vendoring from santifer/career-ops).
 
 ## CI / cross-repo integration
 
